@@ -16,12 +16,14 @@ export class MyQueue extends Construct{
 
         this.orderQueue = new Queue(this, 'OrderQueue',{
             queueName: 'OrderQueue',
-            visibilityTimeout: Duration.seconds(30)
+            visibilityTimeout: Duration.seconds(30),
+            //receiveMessageWaitTime: Duration.seconds(10)
         })
 
-        props.consumer.addEventSource(new SqsEventSource(this.orderQueue,{
-            batchSize: 1
-        }))
+        // props.consumer.addEventSource(new SqsEventSource(this.orderQueue,{
+        //     batchSize: 1
+        // }))
+        this.orderQueue.grantConsumeMessages(props.consumer);
         this.orderQueue.grantSendMessages(props.sender);
     }
 }

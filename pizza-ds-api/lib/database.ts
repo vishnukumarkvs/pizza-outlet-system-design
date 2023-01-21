@@ -5,10 +5,12 @@ import { Construct } from "constructs";
 export class PizzaDatabase extends Construct{
 
     public readonly pizzaTable:ITable;
+    public readonly orderTable:ITable;
 
     constructor(scope:Construct,id:string){
         super(scope,id);
         this.pizzaTable = this.createPizzaTable();
+        this.orderTable = this.createOrderTable();
 
     }
 
@@ -22,7 +24,13 @@ export class PizzaDatabase extends Construct{
         return pizzaTable;
     }
 
-    // private createOrderTable(): ITable{
-    //     const orderTable=
-    // }
+    private createOrderTable(): ITable{
+        const orderTable = new Table(this,'OrderDetails',{
+            partitionKey: {name:'orderId', type:AttributeType.STRING},
+            tableName: "OrderDetails",
+            removalPolicy: RemovalPolicy.DESTROY,
+            billingMode: BillingMode.PAY_PER_REQUEST
+        })
+        return orderTable;
+    }
 } 

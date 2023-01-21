@@ -6,6 +6,7 @@ import { join } from "path";
 
 interface PizzaServiceProps{
     pizzaTable: ITable;
+    orderTable: ITable;
 }
 
 export class PizzaService extends Construct{
@@ -17,7 +18,7 @@ export class PizzaService extends Construct{
         super(scope,id);
         this.pizzaInfoMicroservice = this.createPizzaInfoMicroservice(props.pizzaTable);
         this.orderInfoMicroservice = this.createOrderInfoMicroservice();
-        this.postOrderInfoMicroservice = this.createPostOrderInfoMicroservice();
+        this.postOrderInfoMicroservice = this.createPostOrderInfoMicroservice(props.orderTable);
     }
 
     private createPizzaInfoMicroservice(pizzaTable:ITable){
@@ -60,7 +61,7 @@ export class PizzaService extends Construct{
         })
         return orderFunction;
     }
-    private createPostOrderInfoMicroservice(){
+    private createPostOrderInfoMicroservice(orderTable:ITable){
         const nodeJsFunctionProps: NodejsFunctionProps = {
             bundling:{
                 externalModules:[
@@ -69,6 +70,8 @@ export class PizzaService extends Construct{
             },
             environment:{
                 QUEUE_NAME: 'OrderQueue',
+                PRIMARY_KEY: 'orderId',
+                DYNAMODB_TABLE_NAME: orderTable.tableName
             },
             runtime: Runtime.NODEJS_14_X
         }
@@ -76,6 +79,7 @@ export class PizzaService extends Construct{
             entry: join(__dirname,`/../src/postQueue/index.js`),
             ...nodeJsFunctionProps
         })
+        orderTable.grantReadWriteData(postOrderFunction);
         return postOrderFunction;
     }
 }

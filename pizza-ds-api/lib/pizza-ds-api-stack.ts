@@ -12,7 +12,8 @@ export class PizzaDsApiStack extends cdk.Stack {
     const database = new PizzaDatabase(this,'PizzaDatabase');
 
     const pizzaServices = new PizzaService(this,'PizzaMicroservice',{
-      pizzaTable: database.pizzaTable
+      pizzaTable: database.pizzaTable,
+      orderTable: database.orderTable
     })
 
     const pizzaApiGateway = new PizzaApiGateways(this, 'PizzaApis',{
