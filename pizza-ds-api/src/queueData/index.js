@@ -67,7 +67,7 @@ const getOrder = async(event) =>{
         return result;
     } else {
         console.log("No messages in the queue");
-        return "No messages in the queue";
+        return [];
     }
 }
 

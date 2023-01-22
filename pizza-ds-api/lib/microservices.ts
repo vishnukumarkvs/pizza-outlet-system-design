@@ -70,7 +70,6 @@ export class PizzaService extends Construct{
             },
             environment:{
                 QUEUE_NAME: 'OrderQueue',
-                PRIMARY_KEY: 'orderId',
                 DYNAMODB_TABLE_NAME: orderTable.tableName
             },
             runtime: Runtime.NODEJS_14_X

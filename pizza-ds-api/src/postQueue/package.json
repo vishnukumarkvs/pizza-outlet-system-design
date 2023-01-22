@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.252.0"
+    "@aws-sdk/client-dynamodb": "^3.254.0",
+    "@aws-sdk/client-sqs": "^3.252.0",
+    "@aws-sdk/util-dynamodb": "^3.254.0"
   }
 }

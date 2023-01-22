@@ -1,9 +1,11 @@
 import { GetQueueUrlCommand, SendMessageCommand } from "@aws-sdk/client-sqs";
 import { sqsClient } from "./sqsClient";
+const { PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
+const { ddbClient } = require("./ddbClient");
 
 
 exports.handler = async function(event){
-
     console.log("sqsrequest", JSON.stringify(event, undefined, 2));
 
     let body;
@@ -39,17 +41,26 @@ const postOrder = async(event) =>{
 
     try{
         let body = JSON.parse(event.body);
+        // let newObject = Object.assign({}, body, { orderId: "12345" });
+        // console.log(newObject);
         const params0 = {
             QueueName: process.env.QUEUE_NAME,
         }
 
         const url = await sqsClient.send(new GetQueueUrlCommand(params0));
+         
         const params = {
             QueueUrl: url['QueueUrl'],
             MessageBody: JSON.stringify(body)
         }
         const data = await sqsClient.send(new SendMessageCommand(params));
+        const putParams = {
+            TableName: process.env.DYNAMODB_TABLE_NAME,
+            Item: marshall(body || {})
+        }
+        const putData = await ddbClient.send(new PutItemCommand(putParams));
         console.log(`Output after posting order body to queue: ${JSON.stringify(data)}`);
+        console.log(`Output after posting order body to DynamoDB: ${JSON.stringify(putData)}`);
         return data;
 
     }catch(e){
